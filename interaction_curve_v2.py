@@ -4,9 +4,36 @@ import matplotlib.pyplot as plt
 import os
 from PIL import Image
 from io import BytesIO
+import pandas as pd
+
+
 
 # Title
 st.title("ACI 318-19 Interaction Diagram for Concrete Column")
+
+with st.expander("ℹ️ Click here for Instructions and Explanations"):
+    st.markdown("""
+    **Instructions:**
+    - Input the column dimensions, reinforcement details and material properties in the sidebar.
+    - Upload Excel files (if available) with design points, to plot points on the interaction diagram.
+    - View interaction diagrams for bending about strong and weak axes.
+    - Download the plotted diagrams using the buttons below each plot.
+
+    **Notes:**
+    - Reinforcement inputs should be comma-separated values.
+    - Reinforcement positions should be measured from the top for vertical bars and from the left for horizontal bars.
+    - All dimensions are in **mm**, and forces in **kN**.
+    - The program draws two interaction diagrams:
+        - **Red** for bending about the strong axis (vertical bars)
+        - **Blue** for bending about the weak axis (horizontal bars)
+        
+                Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_v) and the diagrams about weak axis (blue) are based only on the minor reinforcement (As_h).
+              In other words, directions are considered separately
+                
+    - Excel files should contain two columns: 'Pu' and 'Mu'.
+    - Diagrams are based on ACI 318-19 provisions.
+    """)
+
 st.markdown("### Designed for rectangular cross-sections with symmetric reinforcement")
 
 # Inject CSS to widen the main area
@@ -14,13 +41,14 @@ st.markdown(
     """
     <style>
     .block-container {
-        max-width: 1200px;
+        max-width: 1600px;
         margin: auto;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 st.sidebar.header("Input Parameters") 
 
@@ -309,15 +337,13 @@ st.markdown("#### Bending about the strong axis - Red Reinforcement")
 ### Import data from Excel file -  Major reinforcement
 uploaded_file1 = st.file_uploader("Upload Excel file with points", type=["xlsx"], key="1")
 
-import pandas as pd
-
 if uploaded_file1 is not None:
     df_points1 = pd.read_excel(uploaded_file1)
-    if {'Mn', 'Pn'}.issubset(df_points1.columns):
-        Mn_extra = df_points1['Mn'].tolist()
-        Pn_extra = df_points1['Pn'].tolist()
+    if {'Mu', 'Pu'}.issubset(df_points1.columns):
+        Mn_extra = df_points1['Mu'].tolist()
+        Pn_extra = df_points1['Pu'].tolist()
     else:
-        st.error("Excel must contain 'Mn' and 'Pn' columns")
+        st.error("Excel must contain 'Mu' and 'Pu' columns")
         Mn_extra = []
         Pn_extra = []
 else:
@@ -346,8 +372,6 @@ st.download_button(
     mime="image/png"
 )
 
-
-
 st.markdown("### Bending about the weak axis - Blue Reinforcement")
 ### Import data from Excel file -  Minor reinforcement
 uploaded_file2 = st.file_uploader("Upload Excel file with points", type=["xlsx"], key="3")
@@ -355,11 +379,11 @@ uploaded_file2 = st.file_uploader("Upload Excel file with points", type=["xlsx"]
 
 if uploaded_file2 is not None:
     df_points2 = pd.read_excel(uploaded_file2)
-    if {'Mn', 'Pn'}.issubset(df_points2.columns):
-        Mn_extra = df_points2['Mn'].tolist()
-        Pn_extra = df_points2['Pn'].tolist()
+    if {'Mu', 'Pu'}.issubset(df_points2.columns):
+        Mn_extra = df_points2['Mu'].tolist()
+        Pn_extra = df_points2['Pu'].tolist()
     else:
-        st.error("Excel must contain 'Mn' and 'Pn' columns")
+        st.error("Excel must contain 'Mu' and 'Pu' columns")
         Mn_extra = []
         Pn_extra = []
 else:
@@ -389,4 +413,23 @@ st.download_button(
     file_name="weak_axis_interaction_diagram.png",
     mime="image/png" 
 )
+
+st.markdown("""
+### References & Notes
+    """)
+
+
+st.markdown("""
+    - ACI 318-19, "Building Code Requirements for Structural Concrete and Commentary"
+    - E702.9-22, "Design of Concrete Structures - Reinforced Rectangular Concrete Column Interaction Diagram Example"
+    """)
+
+st.markdown("""
+    - [GitHub Repository]( https://github.com/EldainElf/column-interaction-curve-app)
+    - [LinkedIn](https://www.linkedin.com/in/filip-m123/)
+    - [E-Mail](mailto:white.wulf4@gmail.com)
+            """)
+
+if st.sidebar.button("Support the Developer"):
+    st.sidebar.write("Thank you wooo-ho-man!😊")
 
