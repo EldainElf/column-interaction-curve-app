@@ -445,7 +445,7 @@ output.seek(0)
 
 # Download button
 st.download_button(
-    label="📥 Download Interaction Points (Excel) - Major axis",
+    label="📥 Download Interaction Points (Excel)",
     data=output,
     file_name="interaction_points_major.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -517,7 +517,7 @@ output.seek(0)
 
 # Download button
 st.download_button(
-    label="📥 Download Interaction Points (Excel) - Minor axis",
+    label="📥 Download Interaction Points (Excel)",
     data=output,
     file_name="interaction_points_major.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
