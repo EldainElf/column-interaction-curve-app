@@ -183,7 +183,7 @@ def calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
     Z_values5 = np.linspace(-10, -2.49, 100).tolist()   # Tension-controled
     Z_values6 = np.linspace(-1000, -10, 10).tolist()   #Pure tension
 
-    Z_values = Z_values1 + Z_values2 + Z_values3 + Z_values4 + Z_values5 + Z_values6
+    Z_values = Z_values1 + Z_values2 + Z_values4 + Z_values5 + Z_values6
 
     # Esuring that Z has printing points
     
