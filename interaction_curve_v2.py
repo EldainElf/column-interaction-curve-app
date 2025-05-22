@@ -179,7 +179,6 @@ def calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
     # Generate Z values for the interaction diagram
     Z_values1 = np.linspace(0.1, 1, 20).tolist()    # Compresion-controled
     Z_values2 = np.linspace(-1, 0.1, 10).tolist()    
-    Z_values3 = [-1]                                  # Balanced faoilure
     Z_values4 = np.linspace(-2.5, -1.1, 5).tolist() # Translation zone 
     Z_values5 = np.linspace(-10, -2.49, 100).tolist()   # Tension-controled
     Z_values6 = np.linspace(-1000, -10, 10).tolist()   #Pure tension
