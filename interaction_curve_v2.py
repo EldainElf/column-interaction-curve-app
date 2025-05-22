@@ -429,7 +429,6 @@ with st.expander("ℹ️ Boundary points explanation - Strond axis"):
             - Z = -1000 - Pure tension
                             """) 
 
-
 st.download_button(
     label="📥 Download Strong Axis Diagram (PNG)",
     data=buf1,
@@ -445,7 +444,7 @@ output.seek(0)
 
 # Download button
 st.download_button(
-    label="📥 Download Interaction Points (Excel)",
+    label="📥 Download Interaction Points (Excel) - S",
     data=output,
     file_name="interaction_points_major.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -517,7 +516,7 @@ output.seek(0)
 
 # Download button
 st.download_button(
-    label="📥 Download Interaction Points (Excel)",
+    label="📥 Download Interaction Points (Excel) - W",
     data=output,
     file_name="interaction_points_major.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
