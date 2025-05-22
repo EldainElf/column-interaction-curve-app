@@ -5,8 +5,8 @@ import os
 from PIL import Image
 from io import BytesIO
 import pandas as pd
-
-
+import io
+import xlsxwriter
 
 # Title
 st.title("ACI 318-19 Interaction Diagram for Concrete Column")
@@ -181,13 +181,15 @@ def calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
     Z_values2 = np.linspace(-1, 0.1, 10).tolist()    
     Z_values3 = [-1]                                  # Balanced faoilure
     Z_values4 = np.linspace(-2.5, -1.1, 5).tolist() # Translation zone 
-    Z_values5 = np.linspace(-10, -2.5, 10).tolist()   # Tension-controled
+    Z_values5 = np.linspace(-10, -2.49, 100).tolist()   # Tension-controled
     Z_values6 = np.linspace(-1000, -10, 10).tolist()   #Pure tension
 
     Z_values = Z_values1 + Z_values2 + Z_values3 + Z_values4 + Z_values5 + Z_values6
 
-    # Esuring that Z has printing points 
-    Z_print = [-5.0, -1.1, -0.5, 0.9]
+    # Esuring that Z has printing points
+    
+    Z_print = [-1000, -2.5, -1, 0.001, 1]
+
     for z in Z_print:
         if z not in Z_values:
             Z_values.append(z)
@@ -208,11 +210,13 @@ def calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
     # Lists to store results 
     Mn_points = []
     Pn_points = []
-    labels = []
+    Z_labels = []
     eps_values = []
     fs_values = []
     Fs_values = []
-
+    Mn_bon = []
+    Pn_bon = []
+    Z_bon = []
 
     for Z in Z_values:
         # 0. Clear previous values
@@ -288,46 +292,91 @@ def calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
 
         Mn_points.append(Mp)
         Pn_points.append(Pp)
-        labels.append(f"Z={Z}")
+        Z_labels.append(Z)
 
         if Z in Z_print:
-            print(f"Example:")
-            print(f"\n--- Z = {Z} ---")
-            print(f"eps_s1 = {eps_s1:.5f} mm/mm")
-            print(f"c = {c:.2f} mm")        
-            print(f"eps_i = {eps_values}")
-            print(f"fs_i = {fs_values}")
-            print(f"Fs_i = {Fs_values}")
-            print(f"Pn = {Pn:.2f} kN")
-            print(f"Mn = {Mn:.2f} kNm")
-            print(f"fi = {fi:.2f}")
-            print(f"Mp = {Mp:.2f} kNm")
-            print(f"Pp = {Pp:.2f} kN")
+            Mn_bon.append(Mp)
+            Pn_bon.append(Pp)
+            Z_bon.append(f"{Z:.1f}")
+        
 
-    return Pn_points, Mn_points
+    return Pn_points, Mn_points, Mn_bon, Pn_bon, Z_bon, Z_labels
 
-Pn_points_v, Mn_points_v = calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
-Pn_points_h, Mn_points_h = calculate_interaction_points(h, b, Pn_max, eps_y, fc, fy, Es, As_h, dis_left)
+Pn_points_v, Mn_points_v, Mn_bon_v, Pn_bon_v, Z_bon_v, Z_labels_v = calculate_interaction_points(b, h, Pn_max, eps_y, fc, fy, Es, As_v, dis_top)
+Pn_points_h, Mn_points_h, Mn_bon_h, Pn_bon_h, Z_bon_h , Z_labels_h= calculate_interaction_points(h, b, Pn_max, eps_y, fc, fy, Es, As_h, dis_left)
+
+# Points to excel 
+df_points_v_all = pd.DataFrame({
+    'Zv': Z_labels_v,
+    'Mn (kNm)': Mn_points_v,
+    'Pn (kN)': Pn_points_v})
+
+# Points to excel 
+df_points_h_all = pd.DataFrame({
+    'Zv': Z_labels_h,
+    'Mn (kNm)': Mn_points_h,
+    'Pn (kN)': Pn_points_h})
+
+
+def find_Z_where_Pn_is_zero(Pn_points, Mn_points, Z_labels):
+    # Find the index where Pn_points is closest to zero
+    index = np.argmin(np.abs(np.array(Pn_points)))
+    Z_value = Z_labels[index]
+    Mn_value = Mn_points[index]
+    Pn_value = Pn_points[index]
+    return Z_value, Mn_value, Pn_value
+
+# Find Z where Pn is zero
+Z_zero_v, Mn_zero_v, Pn_zero_v = find_Z_where_Pn_is_zero(Pn_points_v, Mn_points_v, Z_labels_v)
+Z_zero_h, Mn_zero_h, Pn_zero_h = find_Z_where_Pn_is_zero(Pn_points_h, Mn_points_h, Z_labels_h)
+
+# Appemd the Z=0.0 point to the list of boundary points
+Mn_bon_v.append(Mn_zero_v)
+Pn_bon_v.append(Pn_zero_v)
+Z_bon_v.append(f"{Z_zero_v:.2f}")
+
+Mn_bon_h.append(Mn_zero_h)
+Pn_bon_h.append(Pn_zero_h)
+Z_bon_h.append(f"{Z_zero_h:.2f}")
+
+
+# Create a dataframe for the points
+df_bon_points_v = pd.DataFrame({
+    'Zv': Z_bon_v,
+    'Mn (kNm)': Mn_bon_v,
+    'Pn (kN)': Pn_bon_v
+})
+df_bon_points_h = pd.DataFrame({
+    'Zv': Z_bon_h,
+    'Mn (kNm)': Mn_bon_h,
+    'Pn (kN)': Pn_bon_h
+})
 
 
 ### Plotting the interaction diagram
-def plot_interaction_diagram(Pn_points, Mn_points, color, show_points=False, extra_Mn=None, extra_Pn=None):
+def plot_interaction_diagram(Pn_points, Mn_points, Mn_bon, Pn_bon, color, Z_bon, show_points=False, extra_Mn=None, extra_Pn=None):
     plt.plot(Mn_points, Pn_points, '-', label="Interaction Curve", color=color, linewidth=2)
+  
+    for x, y, label in zip(Mn_bon, Pn_bon, Z_bon):
+        plt.text(x + 5, y + 5, label, fontsize=5,
+             bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.7))
 
     if show_points:
         plt.plot(Mn_points, Pn_points, '', color=color)
     
     if extra_Mn and extra_Pn:
-        plt.plot(extra_Mn, extra_Pn, 'ks', label='Excel Points')  # black squares
+        plt.plot(extra_Mn, extra_Pn, 'o', label='Excel Points', markersize=3)  # black squares
         for x, y in zip(extra_Mn, extra_Pn):
-            plt.text(x, y, f'({x:.1f}, {y:.1f})', fontsize=8)
+            plt.text(x, y, f'{x:.1f}, {y:.1f}', fontsize=6)
 
     plt.axhline(0, color='gray', linestyle='--')
     plt.axvline(0, color='gray', linestyle='--')
     plt.xlabel('φMn (kN-m)')
     plt.ylabel('φPn (kN)')
     plt.title('ACI 318-19 Interaction Diagram')
-    plt.grid(True)
+    plt.grid(True) # Major grid
+    plt.minorticks_on()
+    plt.grid(which='minor', linestyle=':', linewidth=0.5, color='gray')
     plt.legend()
     plt.tight_layout()
 
@@ -355,7 +404,9 @@ add_excel_points1 = st.checkbox("Show points from Excel", key="2")
 
 fig1 = plt.figure()
 plot_interaction_diagram(
-    Pn_points_v, Mn_points_v, 'red',
+    Pn_points_v, Mn_points_v,
+    Mn_bon_v, Pn_bon_v, 'red',
+    Z_bon_v,
     show_points=True,
     extra_Mn=Mn_extra if add_excel_points1 else None,
     extra_Pn=Pn_extra if add_excel_points1 else None
@@ -365,12 +416,41 @@ buf1 = BytesIO()
 fig1.savefig(buf1, format="png")
 buf1.seek(0)
 
+
+# Add explanation for points on diagram
+with st.expander("ℹ️ Boundary points explanation - Strond axis"):
+    st.dataframe(df_bon_points_v)
+    st.markdown(f""" 
+            - Z = 1.0 - Compression controlled failure
+            - Z = 0.0 - Decompression 
+            - Z = -1.0 - Balance point (Compresion controled limit Strain)
+            - Z = -2.5 - Tension controlled limit
+            - Z = {Z_zero_v: .2f} - Pure Bending 
+            - Z = -1000 - Pure tension
+                            """) 
+
+
 st.download_button(
-    label="Download Strong Axis Diagram (PNG)",
+    label="📥 Download Strong Axis Diagram (PNG)",
     data=buf1,
     file_name="strong_axis_interaction_diagram.png",
     mime="image/png"
 )
+
+# Convert DataFrame to Excel in-memory - Major axis
+output = io.BytesIO()
+with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    df_points_v_all.to_excel(writer, index=False, sheet_name='VRP')
+output.seek(0)
+
+# Download button
+st.download_button(
+    label="📥 Download Interaction Points (Excel) - Major axis",
+    data=output,
+    file_name="interaction_points_major.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
 
 st.markdown("### Bending about the weak axis - Blue Reinforcement")
 ### Import data from Excel file -  Minor reinforcement
@@ -395,12 +475,27 @@ add_excel_points2 = st.checkbox("Show points from Excel", key="4")
 
 fig2 = plt.figure()
 plot_interaction_diagram(
-    Pn_points_h, Mn_points_h, 'Blue',
+    Pn_points_h, Mn_points_h,
+    Mn_bon_h, Pn_bon_h, 'Blue',
+    Z_bon_h,
     show_points=True,
     extra_Mn=Mn_extra if add_excel_points2 else None,
     extra_Pn=Pn_extra if add_excel_points2 else None
 )
 st.pyplot(fig2)
+
+# Add explanation for points on diagram
+with st.expander("ℹ️ Boundary points explanation - Weak axis"):
+    st.dataframe(df_bon_points_h)
+    st.markdown(f""" 
+        - Z = 1.0 - Compression controlled failure
+        - Z = 0.0 - Decompression 
+        - Z = -1.0 - Balance point (Compresion controled limit Strain)
+        - Z = -2.5 - Tension controlled limit
+        - Z = {Z_zero_h: .2f} - Pure Bending 
+        - Z = -1000 - Pure tension
+                        """) 
+
 
 # Save fig2 to buffer
 buf2 = BytesIO()
@@ -408,11 +503,26 @@ fig2.savefig(buf2, format="png")
 buf2.seek(0)
 
 st.download_button(
-    label="Download Weak Axis Diagram (PNG)",
+    label="📥 Download Weak Axis Diagram (PNG)",
     data=buf2,
     file_name="weak_axis_interaction_diagram.png",
     mime="image/png" 
 )
+
+# Convert DataFrame to Excel in-memory - Major axis
+output = io.BytesIO()
+with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    df_points_h_all.to_excel(writer, index=False, sheet_name='HRP')
+output.seek(0)
+
+# Download button
+st.download_button(
+    label="📥 Download Interaction Points (Excel) - Minor axis",
+    data=output,
+    file_name="interaction_points_major.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
 
 st.markdown("""
 ### References & Notes
