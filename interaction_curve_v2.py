@@ -27,8 +27,8 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
         - **Red** for bending about the strong axis (vertical bars)
         - **Blue** for bending about the weak axis (horizontal bars)
         
-                Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_v) and the diagrams about weak axis (blue) are based only on the minor reinforcement (As_h).
-              In other words, directions are considered separately
+                Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_v) and the diagrams about weak axis (blue) are based only on the 
+                minor reinforcement (As_h). In other words, directions are considered separately
                 
     - Excel files should contain two columns: 'Pu' and 'Mu'.
     - Diagrams are based on ACI 318-19 provisions.
