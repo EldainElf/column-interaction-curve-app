@@ -15,22 +15,23 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
     st.markdown("""
     **Instructions:**
     - Input the column dimensions, reinforcement details and material properties in the sidebar.
-    - Upload Excel files (if available) with design points, to plot points on the interaction diagram.
+    - Upload Excel files (if available) with design points, to plot points on the interaction diagram. Excel files should contain two columns: 'Pu' and 'Mu'.
     - View interaction diagrams for bending about strong and weak axes.
     - Download the plotted diagrams using the buttons below each plot.
+    - Download Excel file with points for interaction curve
 
     **Notes:**
     - Reinforcement inputs should be comma-separated values.
     - Reinforcement positions should be measured from the top for vertical bars and from the left for horizontal bars.
     - All dimensions are in **mm**, and forces in **kN**.
     - The program draws two interaction diagrams:
-        - **Red** for bending about the strong axis (vertical bars)
-        - **Blue** for bending about the weak axis (horizontal bars)
+        - **Red** for bending about the strong axis
+        - **Blue** for bending about the weak axis
         
-                Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_v) and the diagrams about weak axis (blue) are based only on the 
-                      minor reinforcement (As_h). In other words, directions are considered separately
-                
-    - Excel files should contain two columns: 'Pu' and 'Mu'.
+                Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_red) and the diagrams about weak axis (blue) are based only on the 
+                      minor reinforcement (As_blue). In other words, directions are considered separately
+                      
+    - In case of need, the biaxial moment strength can be calculated using Equation 5.12.8 given in ACI 314R-16
     - Diagrams are based on ACI 318-19 provisions.
     """)
 
@@ -58,7 +59,7 @@ h = st.sidebar.number_input("Height h (mm)", value=600)
 
 with st.sidebar:
     # Raw input as a comma-separated string
-    As_v_str = st.text_input("Major reinforcement (As_v) [mm²]", "4021, 2412, 2412, 4021")
+    As_v_str = st.text_input("Major reinforcement (As_red) [mm²]", "4021, 2412, 2412, 4021")
     dis_top_str = st.text_input("Reinforcement positions from top (dis_top) [mm]", "50, 150, 450, 550")
 
     # Convert to list of numbers
@@ -70,7 +71,7 @@ with st.sidebar:
         st.stop()
 
     # Raw input as a comma-separated string
-    As_h_str = st.text_input("Minor reinforcement (As_h) [mm²]", "2412, 2412")
+    As_h_str = st.text_input("Minor reinforcement (As_blue) [mm²]", "2412, 2412")
     dis_left_str = st.text_input("Reinforcement positions from left (dis_left) [mm]", "50, 450")
 
     # Convert to list of numbers
@@ -346,7 +347,7 @@ df_bon_points_v = pd.DataFrame({
     'Pn (kN)': Pn_bon_v
 })
 df_bon_points_h = pd.DataFrame({
-    'Zv': Z_bon_h,
+    'Zh': Z_bon_h,
     'Mn (kNm)': Mn_bon_h,
     'Pn (kN)': Pn_bon_h
 })
@@ -415,6 +416,8 @@ buf1 = BytesIO()
 fig1.savefig(buf1, format="png")
 buf1.seek(0)
 
+df_bon_points_v = df_bon_points_v.sort(Zv)
+df_bon_points_h = df_bon_points_h.sort(Zh)
 
 # Add explanation for points on diagram
 with st.expander("ℹ️ Boundary points explanation - Strond axis"):
@@ -526,10 +529,10 @@ st.markdown("""
 ### References & Notes
     """)
 
-
 st.markdown("""
     - ACI 318-19, "Building Code Requirements for Structural Concrete and Commentary"
     - E702.9-22, "Design of Concrete Structures - Reinforced Rectangular Concrete Column Interaction Diagram Example"
+    - 314R_16, "Guide to Simplified Design of RC Buildings
     """)
 
 st.markdown("""
