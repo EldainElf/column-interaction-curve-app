@@ -29,7 +29,7 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
         - **Blue** for bending about the weak axis
         
                  Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_red) and the diagrams about weak axis (blue) are based only on the 
-                   minor reinforcement (As_blue). In other words, directions are considered separately
+                    minor reinforcement (As_blue). In other words, directions are considered separately
 
     - In case of need, the biaxial moment strength can be calculated using Equation 5.12.8 given in ACI 314R-16:
     """)
