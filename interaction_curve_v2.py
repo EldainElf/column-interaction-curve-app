@@ -416,6 +416,10 @@ buf1 = BytesIO()
 fig1.savefig(buf1, format="png")
 buf1.seek(0)
 
+
+df_bon_points_v["Zv"] = df_bon_points_v["Zv"].astype(float)
+df_bon_points_h["Zh"] = df_bon_points_h["Zh"].astype(float)
+
 df_bon_points_v = df_bon_points_v.sort_values("Zv")
 df_bon_points_h = df_bon_points_h.sort_values("Zh")
 
