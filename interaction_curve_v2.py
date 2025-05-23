@@ -35,10 +35,13 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
     """)
     
     st.latex(r"\frac{M_{ux}}{\phi M_{nx}} + \frac{M_{uy}}{\phi M_{ny}} \leq 1.0")
-    st.latex(r"
+    
+    st.markdown(r"""
     - \(M_{ux}\), \(M_{uy}\): factored applied moments about the x- and y-axes.  
     - \(M_{nx}\), \(M_{ny}\): nominal moment capacities about the x- and y-axes.  
-    - \(\phi\): strength reduction factor. ") 
+    - \(\phi\): strength reduction factor.
+    """)
+
     
     st.markdown("""
     - Diagrams are based on ACI 318-19 provisions.
