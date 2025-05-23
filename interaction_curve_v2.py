@@ -416,8 +416,8 @@ buf1 = BytesIO()
 fig1.savefig(buf1, format="png")
 buf1.seek(0)
 
-df_bon_points_v = df_bon_points_v.sort(Zv)
-df_bon_points_h = df_bon_points_h.sort(Zh)
+df_bon_points_v = df_bon_points_v.sort("Zv")
+df_bon_points_h = df_bon_points_h.sort("Zh")
 
 # Add explanation for points on diagram
 with st.expander("ℹ️ Boundary points explanation - Strond axis"):
