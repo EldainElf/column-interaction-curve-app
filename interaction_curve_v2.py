@@ -32,9 +32,7 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
                       minor reinforcement (As_blue). In other words, directions are considered separately
                       
     - In case of need, the biaxial moment strength can be calculated using Equation 5.12.8 given in ACI 314R-16.
-      st.latex(r"""
-                    \frac{M_{ux}}{\phi M_{nx0}} + \frac{M_{uy}}{\phi M_{ny0}} \leq 1.0
-                """)
+    st.latex(r"\frac{M_{ux}}{\phi M_{nx0}} + \frac{M_{uy}}{\phi M_{ny0}} \leq 1.0")
     
     - Diagrams are based on ACI 318-19 provisions.
     """)
