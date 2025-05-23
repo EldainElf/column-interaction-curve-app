@@ -36,7 +36,7 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
     
     st.latex(r"\frac{M_{ux}}{\phi M_{nx}} + \frac{M_{uy}}{\phi M_{ny}} \leq 1.0")
     
-     st.markdown(
+    st.markdown(
         "<p style='text-align: center;'>"
         "$M_{ux}$, $M_{uy}$: factored design moments about the x- and y-axes.<br>"
         "$\\phi M_{nx}$, $\\phi M_{ny}$: nominal moment capacities about the x- and y-axes (from interaction diagram, value where $P_n=0$)."
