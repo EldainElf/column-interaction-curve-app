@@ -18,8 +18,8 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
     - Upload Excel files (if available) with design points, to plot points on the interaction diagram. Excel files should contain two columns: 'Pu' and 'Mu'.
     - View interaction diagrams for bending about strong and weak axes.
     - Download the plotted diagrams using the buttons below each plot.
-    - Download Excel file with points for interaction curve
-
+    - Download Excel file with points for interaction curve. """)
+    st.markdown("""
     **Notes:**
     - Reinforcement inputs should be comma-separated values.
     - Reinforcement positions should be measured from the top for vertical bars and from the left for horizontal bars.
@@ -28,7 +28,7 @@ with st.expander("ℹ️ Click here for Instructions and Explanations"):
         - **Red** for bending about the strong axis
         - **Blue** for bending about the weak axis
         
-         Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_red) and the diagrams about weak axis (blue) are based only on the 
+         - Note: The diagrams about strong axis (red) are based only on the major reinforcement (As_red) and the diagrams about weak axis (blue) are based only on the 
                minor reinforcement (As_blue). In other words, directions are considered separately
 
     - In case of need, the biaxial moment strength can be calculated using Equation 5.12.8 given in ACI 314R-16:
