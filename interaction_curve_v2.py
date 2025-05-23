@@ -423,6 +423,9 @@ df_bon_points_h["Zh"] = df_bon_points_h["Zh"].astype(float)
 df_bon_points_v = df_bon_points_v.sort_values("Zv")
 df_bon_points_h = df_bon_points_h.sort_values("Zh")
 
+df_bon_points_v = df_bon_points_v.reset_index(drop=True)
+df_bon_points_h = df_bon_points_h.reset_index(drop=True)
+
 # Add explanation for points on diagram
 with st.expander("ℹ️ Boundary points explanation - Strond axis"):
     st.dataframe(df_bon_points_v)
